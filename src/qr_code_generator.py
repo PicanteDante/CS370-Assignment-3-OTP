@@ -11,7 +11,9 @@ def generate_qr_code(user_id, secret):
 
 if __name__ == "__main__":
     import sys
-    user_id = sys.argv[1]
+    user_id = "42"
+    if len(sys.argv) > 1:
+        user_id = sys.argv[1]
     secret = pyotp.random_base32()
     generate_qr_code(user_id, secret)
     print(f"Secret: {secret}")
