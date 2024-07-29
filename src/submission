@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+import sys
+import pyotp
+from qr_code_generator import generate_qr_code
+from otp_generator import generate_otp
+import subprocess
+import pkg_resources
+
+REQUIRED_PACKAGES = ["pyotp==2.6.0", "qrcode[pil]==7.3.1"]
+
+def install_packages():
+    # Install packages listed in REQUIRED_PACKAGES
+    try:
+        pkg_resources.require(REQUIRED_PACKAGES)
+    except pkg_resources.DistributionNotFound:
+        print("Installing required packages...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install"] + REQUIRED_PACKAGES)
+
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: ./submission --generate-qr | --get-otp")
+        return
+
+    command = sys.argv[1]
+
+    if command == "--generate-qr":
+        if len(sys.argv) != 3:
+            print("Usage: ./submission --generate-qr <user_id>")
+            return
+        user_id = sys.argv[2]
+        secret = pyotp.random_base32()
+        generate_qr_code(user_id, secret)
+        print(f"Secret: {secret}")
+    elif command == "--get-otp":
+        if len(sys.argv) != 3:
+            print("Usage: ./submission  --get-otp <secret>")
+            return
+        secret = sys.argv[2]
+        generate_otp(secret)
+    else:
+        print("Invalid command")
+
+
+if __name__ == "__main__":
+    main()
